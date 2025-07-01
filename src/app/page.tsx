@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Search, Briefcase, MapPin, Clock, ArrowRight, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 
 interface JobResult {
   job_id: string;
@@ -20,7 +21,7 @@ interface JobResult {
 export default function Home() {
   // Job search state
   const [jobQuery, setJobQuery] = useState('');
-  const [country, setCountry] = useState('US');
+  const [country] = useState('US');
   const [jobResults, setJobResults] = useState<JobResult[]>([]);
   const [isJobLoading, setIsJobLoading] = useState(false);
   const [hasJobSearched, setHasJobSearched] = useState(false);
@@ -33,15 +34,19 @@ export default function Home() {
     setHasJobSearched(true);
 
     try {
-      const response = await fetch(`http://localhost:8000/jobs?query=${encodeURIComponent(jobQuery.trim())}&country=${country}`, {
-        method: 'GET',
+      const response = await fetch(`/api/search`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          query: jobQuery.trim(),
+          country: country
+        })
       });
 
       const data = await response.json();
-      setJobResults(data || []);
+      setJobResults(data.results || []);
     } catch (error) {
       console.error('Job search error:', error);
       setJobResults([]);
@@ -118,7 +123,7 @@ export default function Home() {
             {jobResults.length > 0 ? (
               <>
                 <div className="text-sm text-slate-400">
-                  Found {jobResults.length} jobs for "{jobQuery}" in {country}
+                  Found {jobResults.length} jobs for &quot;{jobQuery}&quot; in {country}
                 </div>
                 {jobResults.map((job) => (
                   <div
@@ -127,7 +132,7 @@ export default function Home() {
                   >
                     <div className="flex items-start space-x-4">
                       {job.employer_logo && (
-                        <img
+                        <Image
                           src={job.employer_logo}
                           alt={job.employer_name}
                           className="w-16 h-16 rounded-lg object-cover bg-slate-700"

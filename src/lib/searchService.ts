@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { config, getApiUrl, getBackendUrl } from '../../config';
+import { config, getBackendUrl } from '../../config';
 
 export interface SearchResult {
   id: string;
@@ -94,29 +94,42 @@ export class SearchService {
     } catch (error) {
       console.error('Backend job search error:', error);
       
-      // Fallback to mock job data
+      // Enhanced fallback with more realistic mock data
       const mockJobs: JobSearchResult[] = [
         {
           id: '1',
           title: `${query} Developer`,
           company: 'TechCorp Inc.',
           location: `${country || 'US'}`,
-          description: `Looking for an experienced ${query} developer to join our team. Great benefits and remote work opportunities.`,
-          url: 'https://example.com/job/1',
-          salary: '$80,000 - $120,000',
-          posted_date: '2024-01-15'
+          description: `We are seeking an experienced ${query} developer to join our dynamic team. This role offers excellent growth opportunities, competitive compensation, and the chance to work on cutting-edge projects. Remote work options available.`,
+          url: '#',
+          salary: '$75,000 - $120,000',
+          posted_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
         },
         {
           id: '2',
           title: `Senior ${query} Engineer`,
-          company: 'InnovateSoft',
+          company: 'InnovateSoft Solutions',
           location: `${country || 'US'}`,
-          description: `Senior position for ${query} expert. Lead technical decisions and mentor junior developers.`,
-          url: 'https://example.com/job/2',
-          salary: '$100,000 - $150,000',
-          posted_date: '2024-01-14'
+          description: `Lead our ${query} development initiatives as a Senior Engineer. Mentor junior developers, architect scalable solutions, and drive technical excellence. Hybrid work environment with flexible hours.`,
+          url: '#',
+          salary: '$95,000 - $150,000',
+          posted_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: '3',
+          title: `${query} Specialist`,
+          company: 'Future Tech Labs',
+          location: `${country || 'US'}`,
+          description: `Join our innovative team as a ${query} specialist. Work on AI-driven projects, collaborate with cross-functional teams, and contribute to revolutionary technology solutions.`,
+          url: '#',
+          salary: '$80,000 - $135,000',
+          posted_date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
         }
       ];
+
+      // Add a note that these are fallback results
+      console.warn('Using fallback job data - backend not available');
 
       return {
         jobs: mockJobs,
@@ -198,7 +211,7 @@ export class SearchService {
 
       const data = await response.json();
       
-      const results: SearchResult[] = (data.items || []).map((item: any, index: number) => ({
+      const results: SearchResult[] = (data.items || []).map((item: Record<string, unknown>, index: number) => ({
         id: index.toString(),
         title: item.title,
         url: item.link,
@@ -237,7 +250,7 @@ export class SearchService {
 
       const data = await response.json();
       
-      const results: SearchResult[] = (data.webPages?.value || []).map((item: any, index: number) => ({
+      const results: SearchResult[] = (data.webPages?.value || []).map((item: Record<string, unknown>, index: number) => ({
         id: index.toString(),
         title: item.name,
         url: item.url,

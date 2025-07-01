@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "export": "next build && next export",
     "dev:full": "concurrently \"npm run dev\" \"npm run backend:dev\"",
     "backend:dev": "cd ../smart-job-parser && python src/main.py",
     "backend:check": "curl -f http://localhost:8000/health || echo 'Backend not running'",

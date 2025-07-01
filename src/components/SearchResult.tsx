@@ -9,7 +9,6 @@ interface SearchResultProps {
 }
 
 export default function SearchResult({ 
-  id, 
   title, 
   url, 
   description, 
